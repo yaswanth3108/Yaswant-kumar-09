@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Management System</title>
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #e94560;
+            --text-color: #ffffff;
+            --text-secondary: #b5b5c3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section, .list-section {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #2a3a5c;
+            border-radius: 5px;
+            background-color: #0f172a;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #cc3750;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .movie-card {
+            background-color: #0f172a;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2a3a5c;
+            position: relative;
+        }
+
+        .movie-info {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .movie-meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .rating-badge {
+            display: inline-block;
+            background-color: #ffbe1a;
+            color: #111;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .card-actions {
+            display: flex;
+            border-top: 1px solid #2a3a5c;
+        }
+
+        .card-actions button {
+            border-radius: 0;
+            padding: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-edit {
+            background-color: #2e7d32;
+        }
+
+        .btn-edit:hover {
+            background-color: #1b5e20;
+        }
+
+        .btn-delete {
+            background-color: #c62828;
+        }
+
+        .btn-delete:hover {
+            background-color: #b71c1c;
+        }
+
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Cinema Management System</h1>
+        <p>Manage, track, and filter your movie database collection easily.</p>
+    </header>
+
+    <div class="main-content">
+        <!-- Form Section to Add/Edit Movies -->
+        <section class="form-section">
+            <h2 id="form-title">Add New Movie</h2>
+            <form id="movie-form">
+                <input type="hidden" id="movie-id">
+                
+                <div class="form-group">
+                    <label for="title">Movie Title</label>
+                    <input type="text" id="title" required placeholder="e.g., Inception">
+                </div>
+
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <select id="genre" required>
+                        <option value="">Select Genre</option>
+                        <option value="Action">Action</option>
+                        <option value="Comedy">Comedy</option>
+                        <option value="Drama">Drama</option>
+                        <option value="Sci-Fi">Sci-Fi</option>
+                        <option value="Thriller">Thriller</option>
+                        <option value="Horror">Horror</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="year">Release Year</label>
+                    <input type="number" id="year" min="1888" max="2030" required placeholder="e.g., 2010">
+                </div>
+
+                <div class="form-group">
+                    <label for="rating">Rating (1-10)</label>
+                    <input type="number" id="rating" min="1" max="10" step="0.1" required placeholder="e.g., 8.8">
+                </div>
+
+                <button type="submit" id="submit-btn">Save Movie</button>
+            </form>
+        </section>
+
+        <!-- List Section to View and Search Movies -->
+        <section class="list-section">
+            <h2>Movie Database Catalog</h2>
+            <div class="form-group search-bar">
+                <input type="text" id="search-input" placeholder="🔍 Search movies by title or genre...">
+            </div>
+
+            <div class="movie-grid" id="movie-grid-container">
+                <!-- Movie cards are injected here dynamically via JS -->
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // System State Data Handling
+    let movies = JSON.parse(localStorage.getItem('movies')) || [];
+    let isEditing = false;
+
+    // DOM Elements Selector
+    const movieForm = document.getElementById('movie-form');
+    const movieIdInput = document.getElementById('movie-id');
+    const titleInput = document.getElementById('title');
+    const genreInput = document.getElementById('genre');
+    const yearInput = document.getElementById('year');
+    const ratingInput = document.getElementById('rating');
+    const submitBtn = document.getElementById('submit-btn');
+    const formTitle = document.getElementById('form-title');
+    const movieGridContainer = document.getElementById('movie-grid-container');
+    const searchInput = document.getElementById('search-input');
+
+    // Initialize System View
+    displayMovies(movies);
+
+    // Form Submit handling (Create & Update)
+    movieForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const movieData = {
+            id: movieIdInput.value || Date.now().toString(),
+            title: titleInput.value.trim(),
+            genre: genreInput.value,
+            year: yearInput.value,
+            rating: parseFloat(ratingInput.value).toFixed(1)
+        };
+
+        if (isEditing) {
+            // Update existing element
+            movies = movies.map(movie => movie.id === movieData.id ? movieData : movie);
+            isEditing = false;
+            submitBtn.innerText = "Save Movie";
+            formTitle.innerText = "Add New Movie";
+        } else {
+            // Add completely new entry
+            movies.push(movieData);
+        }
+
+        saveToLocalStorage();
+        displayMovies(movies);
+        movieForm.reset();
+        movieIdInput.value = '';
+    });
+
+    // Display Movies in UI Catalog Layout Grid
+    function displayMovies(moviesToRender) {
+        movieGridContainer.innerHTML = '';
+
+        if (moviesToRender.length === 0) {
+            movieGridContainer.innerHTML = '<p class="empty-message">No movies found in database catalog.</p>';
+            return;
+        }
+
+        moviesToRender.forEach(movie => {
+            const card = document.createElement('div');
+            card.classList.add('movie-card');
+            card.innerHTML = `
+                <div class="movie-info">
+                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-meta"><strong>Genre:</strong> ${movie.genre}</div>
+                    <div class="movie-meta"><strong>Year:</strong> ${movie.year}</div>
+                    <span class="rating-badge">⭐ ${movie.rating}/10</span>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-edit" onclick="editMovie('${movie.id}')">Edit</button>
+                    <button class="btn-delete" onclick="deleteMovie('${movie.id}')">Delete</button>
+                </div>
+            `;
+            movieGridContainer.appendChild(card);
+            
